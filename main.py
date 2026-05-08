@@ -1,3 +1,4 @@
+from algorithms.bubble_sort import bubble_sort
 import tkinter as tk
 import random
 
@@ -31,6 +32,13 @@ class AlgorithmVisualizer:
             command=self.generate_array
         )
         generate_button.pack(side="left", padx=10)
+        
+        sort_button = tk.Button(
+            controls_frame,
+            text="Start Bubble Sort",
+            command=self.start_sorting
+        )
+        sort_button.pack(side="left", padx=10)
 
         # Canvas
         self.canvas = tk.Canvas(
@@ -40,9 +48,7 @@ class AlgorithmVisualizer:
             bg="white"
         )
         self.canvas.pack(pady=20)
-
         self.array = []
-
         self.generate_array()
 
     def generate_array(self):
@@ -50,11 +56,25 @@ class AlgorithmVisualizer:
             random.randint(ARRAY_MIN, ARRAY_MAX)
             for _ in range(ARRAY_SIZE)
         ]
-
         self.draw_array()
 
-    def draw_array(self):
+    def start_sorting(self):
+        self.sorting_generator = bubble_sort(self.array)
+        self.animate_sorting()
+
+    def animate_sorting(self):
+        try:
+            array_state, index1, index2 = next(self.sorting_generator)
+            self.draw_array(highlight_indices=[index1, index2])
+            self.root.after(30, self.animate_sorting)
+
+        except StopIteration:
+            self.draw_array()
+
+    def draw_array(self, highlight_indices=None):
         self.canvas.delete("all")
+        if highlight_indices is None:
+            highlight_indices = []
 
         canvas_width = 800
         canvas_height = 400
@@ -66,12 +86,14 @@ class AlgorithmVisualizer:
             x1 = (i + 1) * bar_width
             y1 = canvas_height
 
+            color = "red" if i in highlight_indices else "skyblue"
+                        
             self.canvas.create_rectangle(
                 x0,
                 y0,
                 x1,
                 y1,
-                fill="skyblue",
+                fill=color,
                 outline=""
             )
 

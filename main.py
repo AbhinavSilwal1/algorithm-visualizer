@@ -66,7 +66,7 @@ class AlgorithmVisualizer:
         try:
             array_state, index1, index2 = next(self.sorting_generator)
             self.draw_array(highlight_indices=[index1, index2])
-            self.root.after(30, self.animate_sorting)
+            self.root.after(80, self.animate_sorting)
 
         except StopIteration:
             self.draw_array()
@@ -94,7 +94,8 @@ class AlgorithmVisualizer:
                 x1,
                 y1,
                 fill=color,
-                outline=""
+                outline="black",
+                width=1
             )
 
 

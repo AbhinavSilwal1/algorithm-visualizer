@@ -1,12 +1,10 @@
-from algorithms.bubble_sort import bubble_sort
 import tkinter as tk
 import random
-
+from algorithms.bubble_sort import bubble_sort
 
 ARRAY_SIZE = 50
 ARRAY_MIN = 10
 ARRAY_MAX = 500
-
 
 class AlgorithmVisualizer:
     def __init__(self, root):
@@ -32,7 +30,7 @@ class AlgorithmVisualizer:
             command=self.generate_array
         )
         generate_button.pack(side="left", padx=10)
-        
+
         sort_button = tk.Button(
             controls_frame,
             text="Start Bubble Sort",
@@ -48,7 +46,18 @@ class AlgorithmVisualizer:
             bg="white"
         )
         self.canvas.pack(pady=20)
+
+        self.status_label = tk.Label(
+            root,
+            text="Blue = unsorted | Red = comparing | Green = sorted",
+            font=("Arial", 11)
+        )
+        self.status_label.pack(pady=5)
+
         self.array = []
+        self.comparisons = 0
+        self.swaps = 0
+
         self.generate_array()
 
     def generate_array(self):
@@ -56,23 +65,64 @@ class AlgorithmVisualizer:
             random.randint(ARRAY_MIN, ARRAY_MAX)
             for _ in range(ARRAY_SIZE)
         ]
+
+        self.status_label.config(
+            text="Blue = unsorted | Red = comparing | Green = sorted"
+        )
+
         self.draw_array()
 
     def start_sorting(self):
+        self.comparisons = 0
+        self.swaps = 0
+
         self.sorting_generator = bubble_sort(self.array)
         self.animate_sorting()
 
     def animate_sorting(self):
         try:
-            array_state, index1, index2 = next(self.sorting_generator)
-            self.draw_array(highlight_indices=[index1, index2])
-            self.root.after(80, self.animate_sorting)
+            array_state, index1, index2, sorted_start_index, swapped = next(
+                self.sorting_generator
+            )
+
+            if index1 is not None and index2 is not None:
+                self.comparisons += 1
+
+                if swapped:
+                    self.swaps += 1
+                    action_text = "Swapped"
+                else:
+                    action_text = "No swap needed"
+
+                self.status_label.config(
+                    text=(
+                        f"Comparing index {index1} and {index2} | "
+                        f"{action_text} | "
+                        f"Comparisons: {self.comparisons} | "
+                        f"Swaps: {self.swaps}"
+                    )
+                )
+
+            self.draw_array(
+                highlight_indices=[index1, index2],
+                sorted_start_index=sorted_start_index
+            )
+
+            self.root.after(150, self.animate_sorting)
 
         except StopIteration:
-            self.draw_array()
+            self.draw_array(sorted_start_index=0)
+            self.status_label.config(
+                text=(
+                    f"Bubble Sort Complete! "
+                    f"Comparisons: {self.comparisons} | "
+                    f"Swaps: {self.swaps}"
+                )
+            )
 
-    def draw_array(self, highlight_indices=None):
+    def draw_array(self, highlight_indices=None, sorted_start_index=None):
         self.canvas.delete("all")
+
         if highlight_indices is None:
             highlight_indices = []
 
@@ -86,8 +136,13 @@ class AlgorithmVisualizer:
             x1 = (i + 1) * bar_width
             y1 = canvas_height
 
-            color = "red" if i in highlight_indices else "skyblue"
-                        
+            if i in highlight_indices:
+                color = "red"
+            elif sorted_start_index is not None and i >= sorted_start_index:
+                color = "lightgreen"
+            else:
+                color = "skyblue"
+
             self.canvas.create_rectangle(
                 x0,
                 y0,
@@ -98,12 +153,10 @@ class AlgorithmVisualizer:
                 width=1
             )
 
-
 def main():
     root = tk.Tk()
     app = AlgorithmVisualizer(root)
     root.mainloop()
-
 
 if __name__ == "__main__":
     main()

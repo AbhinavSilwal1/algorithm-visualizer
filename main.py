@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 import random
 from algorithms.bubble_sort import bubble_sort
 from algorithms.selection_sort import selection_sort
@@ -20,6 +21,15 @@ class AlgorithmVisualizer:
             font=("Arial", 20, "bold")
         )
         title_label.pack(pady=10)
+
+        # Legend Button
+        legend_button = tk.Button(
+            root,
+            text="Legend",
+            font=("Arial", 10),
+            command=self.show_legend
+        )
+        legend_button.place(x=20, y=15)
 
         # Buttons Frame
         controls_frame = tk.Frame(root)
@@ -54,10 +64,10 @@ class AlgorithmVisualizer:
             bg="white"
         )
         self.canvas.pack(pady=20)
-
+        
         self.status_label = tk.Label(
             root,
-            text="Blue = unsorted | Red = comparing | Green = sorted",
+            text="",
             font=("Arial", 11)
         )
         self.status_label.pack(pady=5)
@@ -75,11 +85,25 @@ class AlgorithmVisualizer:
             for _ in range(ARRAY_SIZE)
         ]
 
-        self.status_label.config(
-            text="Blue = unsorted | Red = comparing | Green = sorted"
-        )
+        self.status_label.config(text="")
 
         self.draw_array()
+
+    # Displays the color legends for different sorting algorithms.
+    def show_legend(self):
+        messagebox.showinfo(
+            "Sorting Color Legends",
+            "Bubble Sort:\n"
+            "Blue = Unsorted\n"
+            "Red = Comparing\n"
+            "Green = Sorted\n\n"
+
+            "Selection Sort:\n"
+            "Blue = Unsorted\n"
+            "Red = Comparing\n"
+            "Purple = Current Position\n"
+            "Orange = Current Minimum"
+        )
 
     # Starts the Bubble Sort animation.
     def start_sorting(self):

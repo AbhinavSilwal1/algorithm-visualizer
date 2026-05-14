@@ -111,14 +111,15 @@ class AlgorithmVisualizer:
             "Selection Sort:\n"
             "Blue = Unsorted\n"
             "Red = Comparing\n"
+            "Green = Sorted\n"
             "Purple = Current Position\n"
             "Orange = Current Minimum\n\n"
 
             "Insertion Sort:\n"
             "Blue = Unsorted\n"
             "Red = Comparing\n"
-            "Purple = Current Key\n"
-            "Green = Sorted"
+            "Green = Sorted\n"
+            "Purple = Current Key"
         )
 
     # Starts the Bubble Sort animation.
@@ -161,7 +162,7 @@ class AlgorithmVisualizer:
             self.root.after(150, self.animate_sorting)
 
         except StopIteration:
-            self.draw_array(sorted_start_index=0)
+            self.draw_array()
             self.status_label.config(
                 text=(
                     f"Bubble Sort Complete! "
@@ -181,7 +182,7 @@ class AlgorithmVisualizer:
     # Animates Selection Sort one generator step at a time.
     def animate_selection_sorting(self):
         try:
-            array_state, current_index, comparing_index, min_index, swapped = next(
+            array_state, current_index, comparing_index, min_index, sorted_boundary, swapped = next(
                 self.sorting_generator
             )
 
@@ -208,18 +209,19 @@ class AlgorithmVisualizer:
             self.draw_array_selection(
                 current_index=current_index,
                 comparing_index=comparing_index,
-                min_index=min_index
+                min_index=min_index,
+                sorted_boundary=sorted_boundary
             )
 
             self.root.after(150, self.animate_selection_sorting)
 
         except StopIteration:
-            self.draw_array(sorted_start_index=0)
+            self.draw_array()
             self.status_label.config(
                 text=(
                     f"Selection Sort Complete! "
                     f"Comparisons: {self.comparisons} | "
-                    f"Swaps: {self.swaps}"
+                 f"Swaps: {self.swaps}"
                 )
             )
 
@@ -310,7 +312,13 @@ class AlgorithmVisualizer:
             )
 
     # Draws the array for Selection Sort.
-    def draw_array_selection(self, current_index=None, comparing_index=None, min_index=None):
+    def draw_array_selection(
+        self,
+        current_index=None,
+        comparing_index=None,
+        min_index=None,
+        sorted_boundary=None
+    ):
         self.canvas.delete("all")
 
         canvas_width = 800
@@ -329,6 +337,8 @@ class AlgorithmVisualizer:
                 color = "red"
             elif i == min_index:
                 color = "orange"
+            elif sorted_boundary is not None and i < sorted_boundary:
+                color = "lightgreen"
             else:
                 color = "skyblue"
 

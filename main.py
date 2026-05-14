@@ -16,6 +16,7 @@ class AlgorithmVisualizer:
         self.root.geometry("900x600")
         self.root.resizable(False, False)
 
+        # Title
         title_label = tk.Label(
             root,
             text="Algorithm Visualizer",
@@ -48,7 +49,7 @@ class AlgorithmVisualizer:
         bubble_sort_button = tk.Button(
             controls_frame,
             text="Start Bubble Sort",
-            command=self.start_sorting
+            command=self.start_bubble_sort
         )
         bubble_sort_button.pack(side="left", padx=10)
 
@@ -123,14 +124,15 @@ class AlgorithmVisualizer:
         )
 
     # Starts the Bubble Sort animation.
-    def start_sorting(self):
+    def start_bubble_sort(self):
         self.comparisons = 0
         self.swaps = 0
+
         self.sorting_generator = bubble_sort(self.array)
-        self.animate_sorting()
+        self.animate_bubble_sorting()
 
     # Animates Bubble Sort one generator step at a time.
-    def animate_sorting(self):
+    def animate_bubble_sorting(self):
         try:
             array_state, index1, index2, sorted_start_index, swapped = next(
                 self.sorting_generator
@@ -154,12 +156,12 @@ class AlgorithmVisualizer:
                     )
                 )
 
-            self.draw_array(
+            self.draw_array_bubble(
                 highlight_indices=[index1, index2],
                 sorted_start_index=sorted_start_index
             )
 
-            self.root.after(150, self.animate_sorting)
+            self.root.after(150, self.animate_bubble_sorting)
 
         except StopIteration:
             self.draw_array()
@@ -221,7 +223,7 @@ class AlgorithmVisualizer:
                 text=(
                     f"Selection Sort Complete! "
                     f"Comparisons: {self.comparisons} | "
-                 f"Swaps: {self.swaps}"
+                    f"Swaps: {self.swaps}"
                 )
             )
 
@@ -277,8 +279,32 @@ class AlgorithmVisualizer:
                 )
             )
 
+    # Draws the default array display.
+    def draw_array(self):
+        self.canvas.delete("all")
+
+        canvas_width = 800
+        canvas_height = 400
+        bar_width = canvas_width / len(self.array)
+
+        for i, value in enumerate(self.array):
+            x0 = i * bar_width
+            y0 = canvas_height - value
+            x1 = (i + 1) * bar_width
+            y1 = canvas_height
+
+            self.canvas.create_rectangle(
+                x0,
+                y0,
+                x1,
+                y1,
+                fill="skyblue",
+                outline="black",
+                width=1
+            )
+
     # Draws the array for Bubble Sort.
-    def draw_array(self, highlight_indices=None, sorted_start_index=None):
+    def draw_array_bubble(self, highlight_indices=None, sorted_start_index=None):
         self.canvas.delete("all")
 
         if highlight_indices is None:
@@ -312,13 +338,7 @@ class AlgorithmVisualizer:
             )
 
     # Draws the array for Selection Sort.
-    def draw_array_selection(
-        self,
-        current_index=None,
-        comparing_index=None,
-        min_index=None,
-        sorted_boundary=None
-    ):
+    def draw_array_selection(self, current_index=None, comparing_index=None, min_index=None, sorted_boundary=None):
         self.canvas.delete("all")
 
         canvas_width = 800

@@ -6,6 +6,7 @@ A Python-based sorting algorithm visualizer using Tkinter, generators, and real-
 - Bubble Sort
 - Selection Sort
 - Insertion Sort
+- Merge Sort
 
 ## Features
 - Real-time sorting visualization

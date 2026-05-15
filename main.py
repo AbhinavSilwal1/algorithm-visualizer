@@ -4,6 +4,7 @@ import random
 from algorithms.bubble_sort import bubble_sort
 from algorithms.selection_sort import selection_sort
 from algorithms.insertion_sort import insertion_sort
+from algorithms.merge_sort import merge_sort
 
 ARRAY_SIZE = 50
 ARRAY_MIN = 10
@@ -69,6 +70,14 @@ class AlgorithmVisualizer:
         )
         insertion_sort_button.pack(side="left", padx=10)
 
+        # Merge Sort Button
+        merge_sort_button = tk.Button(
+            controls_frame,
+            text="Start Merge Sort",
+            command=self.start_merge_sort
+        )
+        merge_sort_button.pack(side="left", padx=10)
+
         # Canvas
         self.canvas = tk.Canvas(
             root,
@@ -120,7 +129,12 @@ class AlgorithmVisualizer:
             "Blue = Unsorted\n"
             "Red = Comparing\n"
             "Green = Sorted\n"
-            "Purple = Current Key"
+            "Purple = Current Key\n\n"
+
+            "Merge Sort:\n"
+            "Blue = Unsorted\n"
+            "Red = Current Merge Index\n"
+            "Green = Current Merging Range"
         )
 
     # Starts the Bubble Sort animation.
@@ -279,6 +293,46 @@ class AlgorithmVisualizer:
                 )
             )
 
+    # Starts the Merge Sort animation.
+    def start_merge_sort(self):
+        self.comparisons = 0
+        self.swaps = 0
+
+        self.sorting_generator = merge_sort(self.array)
+        self.animate_merge_sorting()
+
+    # Animates Merge Sort one generator step at a time.
+    def animate_merge_sorting(self):
+        try:
+            array_state, current_index, left_boundary, right_boundary, merged = next(
+                self.sorting_generator
+            )
+
+            if current_index is not None:
+                self.comparisons += 1
+
+                self.status_label.config(
+                    text=(
+                        f"Merging range {left_boundary} to {right_boundary} | "
+                        f"Current index: {current_index} | "
+                        f"Operations: {self.comparisons}"
+                    )
+                )
+
+            self.draw_array_merge(
+                current_index=current_index,
+                left_boundary=left_boundary,
+                right_boundary=right_boundary
+            )
+
+            self.root.after(150, self.animate_merge_sorting)
+
+        except StopIteration:
+            self.draw_array()
+            self.status_label.config(
+                text=f"Merge Sort Complete! Operations: {self.comparisons}"
+            )
+
     # Draws the default array display.
     def draw_array(self):
         self.canvas.delete("all")
@@ -391,6 +445,37 @@ class AlgorithmVisualizer:
             elif i == comparing_index:
                 color = "red"
             elif current_index is not None and i < current_index:
+                color = "lightgreen"
+            else:
+                color = "skyblue"
+
+            self.canvas.create_rectangle(
+                x0,
+                y0,
+                x1,
+                y1,
+                fill=color,
+                outline="black",
+                width=1
+            )
+
+    # Draws the array for Merge Sort.
+    def draw_array_merge(self, current_index=None, left_boundary=None, right_boundary=None):
+        self.canvas.delete("all")
+
+        canvas_width = 800
+        canvas_height = 400
+        bar_width = canvas_width / len(self.array)
+
+        for i, value in enumerate(self.array):
+            x0 = i * bar_width
+            y0 = canvas_height - value
+            x1 = (i + 1) * bar_width
+            y1 = canvas_height
+
+            if i == current_index:
+                color = "red"
+            elif left_boundary is not None and right_boundary is not None and left_boundary <= i <= right_boundary:
                 color = "lightgreen"
             else:
                 color = "skyblue"

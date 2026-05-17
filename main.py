@@ -6,6 +6,7 @@ from algorithms.selection_sort import selection_sort
 from algorithms.insertion_sort import insertion_sort
 from algorithms.merge_sort import merge_sort
 from algorithms.quick_sort import quick_sort
+from visualizer import Visualizer
 
 ARRAY_SIZE = 50
 ARRAY_MIN = 10
@@ -104,6 +105,7 @@ class AlgorithmVisualizer:
         self.status_label.pack(pady=5)
 
         self.array = []
+        self.visualizer = Visualizer(self.canvas, self.array)
         self.comparisons = 0
         self.swaps = 0
 
@@ -115,8 +117,9 @@ class AlgorithmVisualizer:
             random.randint(ARRAY_MIN, ARRAY_MAX)
             for _ in range(ARRAY_SIZE)
         ]
+        self.visualizer.array = self.array
         self.status_label.config(text="")
-        self.draw_array()
+        self.visualizer.draw_array()
 
     # Displays the color legends for different sorting algorithms.
     def show_legend(self):
@@ -185,7 +188,7 @@ class AlgorithmVisualizer:
                     )
                 )
 
-            self.draw_array_bubble(
+            self.visualizer.draw_array_bubble(
                 highlight_indices=[index1, index2],
                 sorted_start_index=sorted_start_index
             )
@@ -193,7 +196,7 @@ class AlgorithmVisualizer:
             self.root.after(150, self.animate_bubble_sorting)
 
         except StopIteration:
-            self.draw_array()
+            self.visualizer.draw_array()
             self.status_label.config(
                 text=(
                     f"Bubble Sort Complete! "
@@ -237,7 +240,7 @@ class AlgorithmVisualizer:
                     )
                 )
 
-            self.draw_array_selection(
+            self.visualizer.draw_array_selection(
                 current_index=current_index,
                 comparing_index=comparing_index,
                 min_index=min_index,
@@ -247,7 +250,7 @@ class AlgorithmVisualizer:
             self.root.after(150, self.animate_selection_sorting)
 
         except StopIteration:
-            self.draw_array()
+            self.visualizer.draw_array()
             self.status_label.config(
                 text=(
                     f"Selection Sort Complete! "
@@ -291,7 +294,7 @@ class AlgorithmVisualizer:
                     )
                 )
 
-            self.draw_array_insertion(
+            self.visualizer.draw_array_insertion(
                 current_index=current_index,
                 comparing_index=comparing_index
             )
@@ -299,7 +302,7 @@ class AlgorithmVisualizer:
             self.root.after(150, self.animate_insertion_sorting)
 
         except StopIteration:
-            self.draw_array()
+            self.visualizer.draw_array()
             self.status_label.config(
                 text=(
                     f"Insertion Sort Complete! "
@@ -334,7 +337,7 @@ class AlgorithmVisualizer:
                     )
                 )
 
-            self.draw_array_merge(
+            self.visualizer.draw_array_merge(
                 current_index=current_index,
                 left_boundary=left_boundary,
                 right_boundary=right_boundary
@@ -343,7 +346,7 @@ class AlgorithmVisualizer:
             self.root.after(150, self.animate_merge_sorting)
 
         except StopIteration:
-            self.draw_array()
+            self.visualizer.draw_array()
             self.status_label.config(
                 text=f"Merge Sort Complete! Operations: {self.comparisons}"
             )
@@ -383,7 +386,7 @@ class AlgorithmVisualizer:
                     )
                 )
 
-            self.draw_array_quick(
+            self.visualizer.draw_array_quick(
                 current_index=current_index,
                 pivot_index=pivot_index,
                 partition_index=partition_index
@@ -392,203 +395,13 @@ class AlgorithmVisualizer:
             self.root.after(150, self.animate_quick_sorting)
 
         except StopIteration:
-            self.draw_array()
+            self.visualizer.draw_array()
             self.status_label.config(
                 text=(
                     f"Quick Sort Complete! "
                     f"Comparisons: {self.comparisons} | "
                     f"Swaps: {self.swaps}"
                 )
-            )
-
-    # Draws the default array display.
-    def draw_array(self):
-        self.canvas.delete("all")
-
-        canvas_width = 800
-        canvas_height = 400
-        bar_width = canvas_width / len(self.array)
-
-        for i, value in enumerate(self.array):
-            x0 = i * bar_width
-            y0 = canvas_height - value
-            x1 = (i + 1) * bar_width
-            y1 = canvas_height
-
-            self.canvas.create_rectangle(
-                x0,
-                y0,
-                x1,
-                y1,
-                fill="skyblue",
-                outline="black",
-                width=1
-            )
-
-    # Draws the array for Bubble Sort.
-    def draw_array_bubble(self, highlight_indices=None, sorted_start_index=None):
-        self.canvas.delete("all")
-
-        if highlight_indices is None:
-            highlight_indices = []
-
-        canvas_width = 800
-        canvas_height = 400
-        bar_width = canvas_width / len(self.array)
-
-        for i, value in enumerate(self.array):
-            x0 = i * bar_width
-            y0 = canvas_height - value
-            x1 = (i + 1) * bar_width
-            y1 = canvas_height
-
-            if i in highlight_indices:
-                color = "red"
-            elif sorted_start_index is not None and i >= sorted_start_index:
-                color = "lightgreen"
-            else:
-                color = "skyblue"
-
-            self.canvas.create_rectangle(
-                x0,
-                y0,
-                x1,
-                y1,
-                fill=color,
-                outline="black",
-                width=1
-            )
-
-    # Draws the array for Selection Sort.
-    def draw_array_selection(self, current_index=None, comparing_index=None, min_index=None, sorted_boundary=None):
-        self.canvas.delete("all")
-
-        canvas_width = 800
-        canvas_height = 400
-        bar_width = canvas_width / len(self.array)
-
-        for i, value in enumerate(self.array):
-            x0 = i * bar_width
-            y0 = canvas_height - value
-            x1 = (i + 1) * bar_width
-            y1 = canvas_height
-
-            if i == current_index:
-                color = "purple"
-            elif i == comparing_index:
-                color = "red"
-            elif i == min_index:
-                color = "orange"
-            elif sorted_boundary is not None and i < sorted_boundary:
-                color = "lightgreen"
-            else:
-                color = "skyblue"
-
-            self.canvas.create_rectangle(
-                x0,
-                y0,
-                x1,
-                y1,
-                fill=color,
-                outline="black",
-                width=1
-            )
-
-    # Draws the array for Insertion Sort.
-    def draw_array_insertion(self, current_index=None, comparing_index=None):
-        self.canvas.delete("all")
-
-        canvas_width = 800
-        canvas_height = 400
-        bar_width = canvas_width / len(self.array)
-
-        for i, value in enumerate(self.array):
-            x0 = i * bar_width
-            y0 = canvas_height - value
-            x1 = (i + 1) * bar_width
-            y1 = canvas_height
-
-            if i == current_index:
-                color = "purple"
-            elif i == comparing_index:
-                color = "red"
-            elif current_index is not None and i < current_index:
-                color = "lightgreen"
-            else:
-                color = "skyblue"
-
-            self.canvas.create_rectangle(
-                x0,
-                y0,
-                x1,
-                y1,
-                fill=color,
-                outline="black",
-                width=1
-            )
-
-    # Draws the array for Merge Sort.
-    def draw_array_merge(self, current_index=None, left_boundary=None, right_boundary=None):
-        self.canvas.delete("all")
-
-        canvas_width = 800
-        canvas_height = 400
-        bar_width = canvas_width / len(self.array)
-
-        for i, value in enumerate(self.array):
-            x0 = i * bar_width
-            y0 = canvas_height - value
-            x1 = (i + 1) * bar_width
-            y1 = canvas_height
-
-            if i == current_index:
-                color = "red"
-            elif left_boundary is not None and right_boundary is not None and left_boundary <= i <= right_boundary:
-                color = "lightgreen"
-            else:
-                color = "skyblue"
-
-            self.canvas.create_rectangle(
-                x0,
-                y0,
-                x1,
-                y1,
-                fill=color,
-                outline="black",
-                width=1
-            )
-
-    # Draws the array for Quick Sort.
-    def draw_array_quick(self, current_index=None, pivot_index=None, partition_index=None):
-        self.canvas.delete("all")
-
-        canvas_width = 800
-        canvas_height = 400
-        bar_width = canvas_width / len(self.array)
-
-        for i, value in enumerate(self.array):
-            x0 = i * bar_width
-            y0 = canvas_height - value
-            x1 = (i + 1) * bar_width
-            y1 = canvas_height
-
-            if i == pivot_index:
-                color = "orange"
-            elif i == current_index:
-                color = "red"
-            elif partition_index is not None and i <= partition_index:
-                color = "lightgreen"
-            else:
-                color = "skyblue"
-
-            self.canvas.create_rectangle(
-                x0,
-                y0,
-                x1,
-                y1,
-                fill=color,
-                outline="black",
-                width=1
             )
 
 def main():

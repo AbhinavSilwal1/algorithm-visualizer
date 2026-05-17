@@ -5,6 +5,7 @@ from algorithms.bubble_sort import bubble_sort
 from algorithms.selection_sort import selection_sort
 from algorithms.insertion_sort import insertion_sort
 from algorithms.merge_sort import merge_sort
+from algorithms.quick_sort import quick_sort
 
 ARRAY_SIZE = 50
 ARRAY_MIN = 10
@@ -78,6 +79,14 @@ class AlgorithmVisualizer:
         )
         merge_sort_button.pack(side="left", padx=10)
 
+        # Quick Sort Button
+        quick_sort_button = tk.Button(
+            controls_frame,
+            text="Start Quick Sort",
+            command=self.start_quick_sort
+        )
+        quick_sort_button.pack(side="left", padx=10)
+
         # Canvas
         self.canvas = tk.Canvas(
             root,
@@ -134,7 +143,13 @@ class AlgorithmVisualizer:
             "Merge Sort:\n"
             "Blue = Unsorted\n"
             "Red = Current Merge Index\n"
-            "Green = Current Merging Range"
+            "Green = Current Merging Range\n\n"
+
+            "Quick Sort:\n"
+            "Blue = Unsorted\n"
+            "Red = Current Index\n"
+            "Green = Partitioned Region\n"
+            "Orange = Pivot"
         )
 
     # Starts the Bubble Sort animation.
@@ -333,6 +348,59 @@ class AlgorithmVisualizer:
                 text=f"Merge Sort Complete! Operations: {self.comparisons}"
             )
 
+    # Starts the Quick Sort animation.
+    def start_quick_sort(self):
+        self.comparisons = 0
+        self.swaps = 0
+
+        self.sorting_generator = quick_sort(self.array)
+        self.animate_quick_sorting()
+
+    # Animates Quick Sort one generator step at a time.
+    def animate_quick_sorting(self):
+        try:
+            array_state, current_index, pivot_index, partition_index, swapped = next(
+                self.sorting_generator
+            )
+
+            if current_index is not None:
+                self.comparisons += 1
+
+                if swapped:
+                    self.swaps += 1
+                    action_text = "Placed pivot in correct position"
+                else:
+                    action_text = "Partitioning array"
+
+                self.status_label.config(
+                    text=(
+                        f"Current index: {current_index} | "
+                        f"Pivot index: {pivot_index} | "
+                        f"Partition index: {partition_index} | "
+                        f"{action_text} | "
+                        f"Comparisons: {self.comparisons} | "
+                        f"Swaps: {self.swaps}"
+                    )
+                )
+
+            self.draw_array_quick(
+                current_index=current_index,
+                pivot_index=pivot_index,
+                partition_index=partition_index
+            )
+
+            self.root.after(150, self.animate_quick_sorting)
+
+        except StopIteration:
+            self.draw_array()
+            self.status_label.config(
+                text=(
+                    f"Quick Sort Complete! "
+                    f"Comparisons: {self.comparisons} | "
+                    f"Swaps: {self.swaps}"
+                )
+            )
+
     # Draws the default array display.
     def draw_array(self):
         self.canvas.delete("all")
@@ -476,6 +544,39 @@ class AlgorithmVisualizer:
             if i == current_index:
                 color = "red"
             elif left_boundary is not None and right_boundary is not None and left_boundary <= i <= right_boundary:
+                color = "lightgreen"
+            else:
+                color = "skyblue"
+
+            self.canvas.create_rectangle(
+                x0,
+                y0,
+                x1,
+                y1,
+                fill=color,
+                outline="black",
+                width=1
+            )
+
+    # Draws the array for Quick Sort.
+    def draw_array_quick(self, current_index=None, pivot_index=None, partition_index=None):
+        self.canvas.delete("all")
+
+        canvas_width = 800
+        canvas_height = 400
+        bar_width = canvas_width / len(self.array)
+
+        for i, value in enumerate(self.array):
+            x0 = i * bar_width
+            y0 = canvas_height - value
+            x1 = (i + 1) * bar_width
+            y1 = canvas_height
+
+            if i == pivot_index:
+                color = "orange"
+            elif i == current_index:
+                color = "red"
+            elif partition_index is not None and i <= partition_index:
                 color = "lightgreen"
             else:
                 color = "skyblue"

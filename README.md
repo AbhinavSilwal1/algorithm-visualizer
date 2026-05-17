@@ -7,6 +7,7 @@ A Python-based sorting algorithm visualizer using Tkinter, generators, and real-
 - Selection Sort
 - Insertion Sort
 - Merge Sort
+- Quick Sort
 
 ## Features
 - Real-time sorting visualization

@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import messagebox
 import random
 from algorithms.bubble_sort import bubble_sort
 from algorithms.selection_sort import selection_sort
@@ -16,7 +15,7 @@ class AlgorithmVisualizer:
     def __init__(self, root):
         self.root = root
         self.root.title("Algorithm Visualizer")
-        self.root.geometry("900x600")
+        self.root.geometry("1080x600")
         self.root.resizable(False, False)
 
         # Title
@@ -26,15 +25,6 @@ class AlgorithmVisualizer:
             font=("Arial", 20, "bold")
         )
         title_label.pack(pady=10)
-
-        # Legend Button
-        legend_button = tk.Button(
-            root,
-            text="Legend",
-            font=("Arial", 10),
-            command=self.show_legend
-        )
-        legend_button.place(x=20, y=15)
 
         # Buttons Frame
         controls_frame = tk.Frame(root)
@@ -76,6 +66,7 @@ class AlgorithmVisualizer:
             fg="black"
         )
         algorithm_dropdown.pack(side="left", padx=10)
+        self.selected_algorithm.trace_add("write", self.update_legend)
 
         # Start Sorting Button
         start_button = tk.Button(
@@ -85,21 +76,41 @@ class AlgorithmVisualizer:
         )
         start_button.pack(side="left", padx=10)
 
+        # Display Frame
+        display_frame = tk.Frame(root)
+        display_frame.pack(pady=20)
+
         # Canvas
         self.canvas = tk.Canvas(
-            root,
+            display_frame,
             width=800,
             height=400,
             bg="white"
         )
-        self.canvas.pack(pady=20)
+        self.canvas.pack(side="left", padx=(0, 30))
+
+        # Dynamic Legend
+        self.legend_content = tk.Label(
+            display_frame,
+            text="",
+            font=("Arial", 11),
+            justify="left",
+            anchor="n"
+        )
+        self.legend_content.pack(side="left", anchor="n", pady=150)
         
+        # Stats
         self.status_label = tk.Label(
             root,
             text="",
             font=("Arial", 11)
         )
-        self.status_label.pack(pady=5)
+
+        self.status_label.place(
+            relx=0.42,
+            rely=0.95,
+            anchor="center"
+        )       
 
         self.array = []
         self.visualizer = Visualizer(self.canvas, self.array)
@@ -118,39 +129,18 @@ class AlgorithmVisualizer:
         self.status_label.config(text="")
         self.visualizer.draw_array()
 
-    # Displays the color legends for different sorting algorithms.
-    def show_legend(self):
-        messagebox.showinfo(
-            "Sorting Color Legends",
-            "Bubble Sort:\n"
-            "Blue = Unsorted\n"
-            "Red = Comparing\n"
-            "Green = Sorted\n\n"
+    # Updates the visible legend based on the selected algorithm.
+    def update_legend(self, *args):
+        selected = self.selected_algorithm.get()
 
-            "Selection Sort:\n"
-            "Blue = Unsorted\n"
-            "Red = Comparing\n"
-            "Green = Sorted\n"
-            "Purple = Current Position\n"
-            "Orange = Current Minimum\n\n"
-
-            "Insertion Sort:\n"
-            "Blue = Unsorted\n"
-            "Red = Comparing\n"
-            "Green = Sorted\n"
-            "Purple = Current Key\n\n"
-
-            "Merge Sort:\n"
-            "Blue = Unsorted\n"
-            "Red = Current Merge Index\n"
-            "Green = Current Merging Range\n\n"
-
-            "Quick Sort:\n"
-            "Blue = Unsorted\n"
-            "Red = Current Index\n"
-            "Green = Partitioned Region\n"
-            "Orange = Pivot"
-        )
+        legends = {
+            "Bubble Sort": "🔵 Unsorted\n\n🔴 Comparing\n\n🟢 Sorted",
+            "Selection Sort": "🔵 Unsorted\n\n🔴 Comparing\n\n🟢 Sorted\n\n🟣 Current Position\n\n🟠 Current Minimum",
+            "Insertion Sort": "🔵 Unsorted\n\n🔴 Comparing\n\n🟢 Sorted\n\n🟣 Current Key",
+            "Merge Sort": "🔵 Unsorted\n\n🔴 Current Merge Index\n\n🟢 Current Merging Range",
+            "Quick Sort": "🔵 Unsorted\n\n🔴 Current Index\n\n🟢 Partitioned Region\n\n🟠 Pivot"
+        }
+        self.legend_content.config(text=legends.get(selected, ""))
 
     # Starts the selected sorting algorithm.
     def start_selected_sort(self):

@@ -11,11 +11,13 @@ A Python-based sorting algorithm visualizer using Tkinter, generators, and real-
 
 ## Features
 - Real-time sorting visualization
-- Color-coded algorithm animations
-- Comparison and swap counters
+- Multiple sorting algorithm animations
+- Color-coded dynamic visual feedback
+- Live comparison and swap counters
 - Random array generation
-- Interactive GUI
-- Sorting legend popup
+- Interactive Tkinter GUI
+- Dynamic algorithm legend display
+- Algorithm selection dropdown menu
 
 ## Technologies Used
 - Python

@@ -48,45 +48,42 @@ class AlgorithmVisualizer:
         )
         generate_button.pack(side="left", padx=10)
 
-        # Bubble Sort Button
-        bubble_sort_button = tk.Button(
-            controls_frame,
-            text="Start Bubble Sort",
-            command=self.start_bubble_sort
-        )
-        bubble_sort_button.pack(side="left", padx=10)
+        # Algorithm Dropdown
+        self.selected_algorithm = tk.StringVar()
+        self.selected_algorithm.set("<Select Algorithm>")
 
-        # Selection Sort Button
-        selection_sort_button = tk.Button(
+        algorithm_dropdown = tk.OptionMenu(
             controls_frame,
-            text="Start Selection Sort",
-            command=self.start_selection_sort
+            self.selected_algorithm,
+            "Bubble Sort",
+            "Selection Sort",
+            "Insertion Sort",
+            "Merge Sort",
+            "Quick Sort"
         )
-        selection_sort_button.pack(side="left", padx=10)
 
-        # Insertion Sort Button
-        insertion_sort_button = tk.Button(
-            controls_frame,
-            text="Start Insertion Sort",
-            command=self.start_insertion_sort
+        algorithm_dropdown.config(
+            width=18,
+            bg="white",
+            fg="black",
+            activebackground="white",
+            activeforeground="black",
+            highlightthickness=0
         )
-        insertion_sort_button.pack(side="left", padx=10)
 
-        # Merge Sort Button
-        merge_sort_button = tk.Button(
-            controls_frame,
-            text="Start Merge Sort",
-            command=self.start_merge_sort
+        algorithm_dropdown["menu"].config(
+            bg="white",
+            fg="black"
         )
-        merge_sort_button.pack(side="left", padx=10)
+        algorithm_dropdown.pack(side="left", padx=10)
 
-        # Quick Sort Button
-        quick_sort_button = tk.Button(
+        # Start Sorting Button
+        start_button = tk.Button(
             controls_frame,
-            text="Start Quick Sort",
-            command=self.start_quick_sort
+            text="Start Sorting",
+            command=self.start_selected_sort
         )
-        quick_sort_button.pack(side="left", padx=10)
+        start_button.pack(side="left", padx=10)
 
         # Canvas
         self.canvas = tk.Canvas(
@@ -154,6 +151,25 @@ class AlgorithmVisualizer:
             "Green = Partitioned Region\n"
             "Orange = Pivot"
         )
+
+    # Starts the selected sorting algorithm.
+    def start_selected_sort(self):
+        selected = self.selected_algorithm.get()
+
+        if selected == "Bubble Sort":
+            self.start_bubble_sort()
+
+        elif selected == "Selection Sort":
+            self.start_selection_sort()
+
+        elif selected == "Insertion Sort":
+            self.start_insertion_sort()
+
+        elif selected == "Merge Sort":
+            self.start_merge_sort()
+
+        elif selected == "Quick Sort":
+            self.start_quick_sort()
 
     # Starts the Bubble Sort animation.
     def start_bubble_sort(self):
